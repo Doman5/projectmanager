@@ -17,15 +17,15 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String comment;
+    private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
-    private User creator;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @JoinColumn(name = "issue_id")
+    @JoinColumn(name = "task_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Issue issue;
+    private Task task;
 
-    private LocalDateTime createdOn;
+    private LocalDateTime createdAt;
 }

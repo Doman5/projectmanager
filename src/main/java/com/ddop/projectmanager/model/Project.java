@@ -2,6 +2,8 @@ package com.ddop.projectmanager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,12 +23,16 @@ public class Project {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Sprint> sprints;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-    private List<Issue> issues;
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Task> issues;
 }

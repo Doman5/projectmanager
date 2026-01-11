@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "sprints")
+@Table(name = "Sprints")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -32,10 +32,11 @@ public class Sprint {
     private String name;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private boolean finished;
+    private boolean finished = false;
+    private boolean started = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sprint")
-    private List<Issue> assignedTasks;
+    private List<Task> assignedIssues;
 
     @JoinColumn(name = "project_id")
     @ManyToOne(fetch = FetchType.LAZY)

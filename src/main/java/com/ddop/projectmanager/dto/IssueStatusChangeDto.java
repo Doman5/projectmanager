@@ -1,4 +1,10 @@
 package com.ddop.projectmanager.dto;
 
-public record IssueStatusChangeDto() {
+import com.ddop.projectmanager.model.IssueStatus;
+import jakarta.validation.constraints.NotNull;
+
+public record IssueStatusChangeDto(
+        @NotNull
+        IssueStatus newStatus
+) {
 }

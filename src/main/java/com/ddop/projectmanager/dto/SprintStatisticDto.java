@@ -1,4 +1,10 @@
 package com.ddop.projectmanager.dto;
 
-public record SprintStattisticDto() {
+public record SprintStatisticDto(
+        Long id,
+        String sprintName,
+        Long totalIssuesCount,
+        Long completedIssuesCount,
+        Long inProgressIssuesCount
+) {
 }
