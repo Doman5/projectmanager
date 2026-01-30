@@ -1,0 +1,27 @@
+@startuml
+' Sequence diagram: assign user to project
+
+actor User as user
+participant "ProjectMemberController" as PMC
+participant "ProjectMembershipService" as PMS
+participant "PermissionService" as Perm
+participant "ProjectService" as PS
+participant "UserService" as US
+participant "ProjectMembershipRepository" as PMR
+
+user -> PMC: POST /api/projects/{id}/members (ProjectMemberCreateDto)
+PMC -> PMS: assignUsers(projectId, dto)
+PMS -> Perm: checkAuthenticatedUserHasProjectEditPermission(projectId)
+Perm --> PMS: ok
+PMS -> PS: fetchProject(projectId)
+PS --> PMS: Project
+PMS -> US: fetchUser(userId)
+US --> PMS: User
+PMS -> PMR: findByProjectIdAndUserId(projectId, userId)
+PMR --> PMS: Optional
+PMS -> PMR: save(ProjectMember)
+PMR --> PMS: ProjectMember
+PMS --> PMC: ProjectMembershipDto
+PMC --> user: 201 Created (ProjectMembershipDto)
+
+@enduml

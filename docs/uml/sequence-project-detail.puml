@@ -1,0 +1,19 @@
+@startuml
+' Sequence diagram: get project detail
+
+actor User as user
+participant "ProjectController" as PC
+participant "ProjectService" as PS
+participant "PermissionService" as Perm
+participant "ProjectRepository" as PR
+
+user -> PC: GET /api/projects/{id}
+PC -> PS: getProject(id)
+PS -> Perm: checkAuthenticatedUserAssignedToProject(id)
+Perm --> PS: ok
+PS -> PR: findById(id)
+PR --> PS: Project
+PS --> PC: ProjectDetailDto
+PC --> user: 200 OK (ProjectDetailDto)
+
+@enduml

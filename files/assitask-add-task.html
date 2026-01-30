@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssiTask - Add Task</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #2A2A2A;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #615FFF;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav a:hover {
+            opacity: 0.8;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .user-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .user-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #615FFF;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal {
+            background: #3A3A3A;
+            border-radius: 20px;
+            padding: 50px;
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+            opacity: 0.7;
+        }
+
+        .task-name-input {
+            width: 100%;
+            padding: 18px 24px;
+            border: none;
+            border-radius: 12px;
+            background: #4A4A4A;
+            font-size: 16px;
+            color: #999;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .task-name-input:hover {
+            background: #555555;
+        }
+
+        .task-name-input:focus {
+            background: #555555;
+            color: white;
+        }
+
+        .task-name-input::placeholder {
+            color: #999;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .task-type-select,
+        .due-date-select {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #4A4A4A;
+            font-size: 15px;
+            color: #999;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            padding-right: 45px;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='10' viewBox='0 0 16 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L8 8L15 1' stroke='%23999999' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+        }
+
+        .task-type-select:hover,
+        .due-date-select:hover {
+            background-color: #555555;
+        }
+
+        .assignee-icon {
+            width: 56px;
+            height: 56px;
+            background: #4A4A4A;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .assignee-icon:hover {
+            background: #555555;
+        }
+
+        .assignee-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .assignee-panel {
+            background: #2F2F2F;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            display: none;
+            border: 1px solid #4A4A4A;
+        }
+
+        .assignee-panel.active {
+            display: block;
+        }
+
+        .assignee-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow: auto;
+        }
+
+        .assignee-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #3A3A3A;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .assignee-item:hover {
+            background: #454545;
+        }
+
+        .assignee-label {
+            font-weight: 600;
+            color: #E8E8E8;
+        }
+
+        .assignee-selected {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #C0C0C0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .create-task-btn {
+            width: 100%;
+            max-width: 350px;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            background: #7B7BFF;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .create-task-btn:hover {
+            background: #8E8EFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(123, 123, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo" onclick="window.location.href='assitask-home.html'" style="cursor: pointer;">AssiTask</div>
+        <nav class="nav">
+            <a href="assitask-board.html">BOARD</a>
+            <a href="assitask-backlog.html">BACKLOG</a>
+            <a href="assitask-summary.html">SUMMARY</a>
+            <div class="user-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M12 14c-6 0-8 3-8 6h16c0-3-2-6-8-6z"/>
+                </svg>
+            </div>
+        </nav>
+    </header>
+
+    <div class="modal-overlay">
+        <div class="modal">
+            <button class="close-btn" onclick="window.location.href='assitask-board.html'">×</button>
+            
+            <form id="addTaskForm">
+                <input id="taskTitle" type="text" class="task-name-input" placeholder="TASK NAME">
+                <input id="taskDescription" type="text" class="task-name-input" placeholder="DESCRIPTION (OPTIONAL)" style="margin-top: -8px;">
+                
+                <div class="form-row">
+                    <select id="taskType" class="task-type-select">
+                        <option>Task</option>
+                        <option>Bug</option>
+                        <option>Story</option>
+                    </select>
+                    
+                    <select class="due-date-select">
+                        <option>DUE DATE</option>
+                        <option>Today</option>
+                        <option>Tomorrow</option>
+                        <option>Next Week</option>
+                    </select>
+                    
+                    <div id="assigneeIcon" class="assignee-icon" title="Assign user">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M12 14c-6 0-8 3-8 6h16c0-3-2-6-8-6z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div id="assigneePanel" class="assignee-panel">
+                    <div id="assigneeError" style="margin-bottom: 8px; color: #FF9F1C; font-weight: 600;"></div>
+                    <ul id="assigneeList" class="assignee-list"></ul>
+                </div>
+                <div id="assigneeSelected" class="assignee-selected">UNASSIGNED</div>
+                
+                <button type="submit" class="create-task-btn">Create Task</button>
+                <div id="addTaskError" style="margin-top: 16px; color: #7B7BFF; font-weight: 600; text-align: center;"></div>
+            </form>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    <script src="assitask-add-task.js"></script>
+</body>
+</html>

@@ -10,6 +10,7 @@ public record ProjectStatisticDto(
         Long completedIssuesCount,
         Long inProgressIssuesCount,
         Long backlogIssuesCount,
+        Long todoIssuesCount,
         Long totalSprintsCount,
         Long finishedSprintsCount,
         List<UserStatisticDto> userStatistics,

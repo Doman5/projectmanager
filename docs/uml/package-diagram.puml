@@ -1,0 +1,33 @@
+@startuml
+' Package diagram for ProjectManager
+
+package "com.ddop.projectmanager" {
+  package conf
+  package controller
+  package service
+  package repo
+  package mapper
+  package dto
+  package model
+  package aspect
+}
+
+controller ..> service
+controller ..> dto
+controller ..> mapper
+controller ..> model
+
+service ..> repo
+service ..> model
+service ..> dto
+service ..> mapper
+service ..> conf
+
+repo ..> model
+mapper ..> model
+mapper ..> dto
+aspect ..> model
+conf ..> service
+conf ..> model
+
+@enduml

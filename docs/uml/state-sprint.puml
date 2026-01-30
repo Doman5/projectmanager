@@ -1,0 +1,9 @@
+@startuml
+' State diagram: Sprint lifecycle based on flags and actions
+
+[*] --> PLANNED
+PLANNED --> STARTED : startSprint
+STARTED --> FINISHED : finishSprint
+FINISHED --> [*]
+
+@enduml

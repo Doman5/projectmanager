@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssiTask - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #2A2A2A;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Header/Navigation */
+        .header {
+            background: #615FFF;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav a:hover {
+            opacity: 0.8;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .user-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .user-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #615FFF;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: 40px;
+            color: #7B7BFF;
+            margin-bottom: 60px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Projects Section */
+        .projects-section {
+            background: #615FFF;
+            border-radius: 8px;
+            padding: 40px;
+        }
+
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .projects-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2D2D2D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-project-btn {
+            background: #2D2D2D;
+            color: #C0C0C0;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .start-project-btn:hover {
+            background: #1A1A1A;
+            color: white;
+        }
+
+        .projects-list {
+            list-style: none;
+        }
+
+        .project-item {
+            padding: 16px 0;
+            font-size: 20px;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: padding-left 0.2s ease;
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .project-item:hover {
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo" onclick="window.location.href='assitask-home.html'" style="cursor: pointer;">AssiTask</div>
+        <nav class="nav">
+            <a href="assitask-board.html">BOARD</a>
+            <a href="assitask-backlog.html">BACKLOG</a>
+            <a href="assitask-summary.html">SUMMARY</a>
+            <div class="user-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M12 14c-6 0-8 3-8 6h16c0-3-2-6-8-6z"/>
+                </svg>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="tagline">Plan, track, and deliver — all in one place.</h1>
+
+        <section class="projects-section">
+            <div class="projects-header">
+                <h2 class="projects-title">Your Projects</h2>
+                <button class="start-project-btn" onclick="window.location.href='assitask-new-project.html'">Start New Project</button>
+            </div>
+
+            <ul id="projectsList" class="projects-list"></ul>
+            <p id="projectsEmpty" style="margin-top: 16px; display: none; color: #2D2D2D; font-weight: 600;">Brak projektów.</p>
+        </section>
+    </div>
+    <script src="app.js"></script>
+    <script src="assitask-home.js"></script>
+</body>
+</html>

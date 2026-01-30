@@ -1,0 +1,19 @@
+@startuml
+' Sequence diagram: create project
+
+actor User as user
+participant "ProjectController" as PC
+participant "ProjectService" as PS
+participant "UserService" as US
+participant "ProjectRepository" as PR
+
+user -> PC: POST /api/projects (ProjectCreatedDto)
+PC -> PS: createProject(payload)
+PS -> US: fetchUser(ownerId)
+US --> PS: User
+PS -> PR: save(Project)
+PR --> PS: Project
+PS --> PC: ProjectDto
+PC --> user: 201 Created (ProjectDto)
+
+@enduml

@@ -5,6 +5,8 @@ public record SprintStatisticDto(
         String sprintName,
         Long totalIssuesCount,
         Long completedIssuesCount,
-        Long inProgressIssuesCount
+        Long inProgressIssuesCount,
+        Long todoIssuesCount,
+        Long backlogIssuesCount
 ) {
 }

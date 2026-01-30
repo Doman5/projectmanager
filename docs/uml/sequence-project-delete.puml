@@ -1,0 +1,19 @@
+@startuml
+' Sequence diagram: delete project
+
+actor User as user
+participant "ProjectController" as PC
+participant "ProjectService" as PS
+participant "PermissionService" as Perm
+participant "ProjectRepository" as PR
+
+user -> PC: DELETE /api/projects/{id}
+PC -> PS: delete(id)
+PS -> Perm: checkAuthenticatedUserHasProjectEditPermission(id)
+Perm --> PS: ok
+PS -> PR: deleteById(id)
+PR --> PS: void
+PS --> PC: void
+PC --> user: 204 No Content
+
+@enduml

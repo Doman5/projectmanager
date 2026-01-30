@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssiTask - Register</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #1b1f2a;
+      --accent: #8b8bff;
+      --accent-dark: #6c6cff;
+      --text: #f5f5f5;
+      --muted: #b5b5b5;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1a1e2b 0%, #0f1115 60%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      background: #23283a;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--accent);
+      color: #0f1115;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    .error {
+      margin-top: 12px;
+      color: var(--danger);
+      font-weight: 600;
+      min-height: 18px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">AssiTask</div>
+    <div class="subtitle">Create your account</div>
+
+    <form id="registerForm">
+      <div class="form-grid">
+        <div class="input-group">
+          <input id="firstName" type="text" placeholder="Imię" required>
+        </div>
+        <div class="input-group">
+          <input id="lastName" type="text" placeholder="Nazwisko" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <input id="email" type="email" placeholder="E-mail" required>
+      </div>
+
+      <div class="form-grid">
+        <div class="input-group">
+          <input id="password" type="password" placeholder="Hasło" required>
+        </div>
+        <div class="input-group">
+          <input id="confirm" type="password" placeholder="Powtórz hasło" required>
+        </div>
+      </div>
+
+      <button class="btn" type="submit">Register</button>
+      <div id="registerError" class="error"></div>
+    </form>
+
+    <div class="footer">
+      Masz już konto? <a href="login.html">Zaloguj się</a>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const form = document.getElementById('registerForm');
+    const error = document.getElementById('registerError');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      if (password !== confirm) {
+        error.textContent = 'Hasła nie są takie same.';
+        return;
+      }
+
+      try {
+        await window.FrontendApp.apiFetch('/api/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ email, password, firstName, lastName }),
+        });
+        const login = await window.FrontendApp.apiFetch('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password }),
+        });
+        localStorage.setItem('token', login.token);
+        window.location.href = '/projects.html';
+      } catch (err) {
+        error.textContent = 'Nie udało się zarejestrować.';
+      }
+    });
+  </script>
+</body>
+</html>

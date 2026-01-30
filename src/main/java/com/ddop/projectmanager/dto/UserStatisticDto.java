@@ -6,6 +6,7 @@ public record UserStatisticDto(
         Long assignedIssuesCount,
         Long completedIssuesCount,
         Long inProgressIssuesCount,
-        Long backlogIssuesCount
+        Long backlogIssuesCount,
+        Long todoIssuesCount
 ) {
 }

@@ -1,0 +1,22 @@
+@startuml
+' Sequence diagram: login flow
+
+actor User as user
+participant "AuthController" as AC
+participant "AuthService" as AS
+participant "AuthenticationManager" as AM
+participant "UserDetailsService" as UDS
+participant "JwtService" as JS
+
+user -> AC: POST /api/auth/login (email, password)
+AC -> AS: login(LoginDto)
+AS -> AM: authenticate(UsernamePasswordAuthenticationToken)
+AM -> UDS: loadUserByUsername(email)
+UDS --> AM: UserDetails
+AM --> AS: Authentication
+AS -> JS: generateToken(UserDetails)
+JS --> AS: JWT token
+AS --> AC: TokenDto
+AC --> user: 200 OK (token)
+
+@enduml

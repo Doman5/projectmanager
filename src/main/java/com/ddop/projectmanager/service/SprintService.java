@@ -27,6 +27,7 @@ public class SprintService {
     private final SprintRepository sprintRepository;
     private final ProjectService projectService;
     private final TaskRepository taskRepository;
+    private final com.ddop.projectmanager.repo.ProjectChangeRepository projectChangeRepository;
     protected final ProjectChangeService projectChangeService;
 
     @Transactional
@@ -68,6 +69,10 @@ public class SprintService {
     @Transactional
     public void deleteSprint(Long id) {
         Sprint sprint = fetchSprint(id);
+        List<Task> tasks = taskRepository.findAllBySprintId(id);
+        tasks.forEach(task -> task.setSprint(null));
+        taskRepository.saveAll(tasks);
+        projectChangeRepository.clearSprintReference(id);
         projectChangeService.createSprintDeleteChange(sprint.getProject(), sprint);
         sprintRepository.deleteById(id);
         log.info("Sprint with id: {} deleted", id);
@@ -81,7 +86,10 @@ public class SprintService {
 
         List<Task> issuesInProgress = sprint.getAssignedIssues().stream()
                 .filter(issue -> !issue.getStatus().equals(IssueStatus.DONE))
-                .peek(issue -> issue.setSprint(null))
+                .peek(issue -> {
+                    issue.setSprint(null);
+                    issue.setStatus(IssueStatus.BACKLOG);
+                })
                 .toList();
 
         taskRepository.saveAll(issuesInProgress);
@@ -98,8 +106,22 @@ public class SprintService {
     @Transactional
     public void startSprint(Long id) {
         Sprint sprint = fetchSprint(id);
+        List<Sprint> projectSprints = sprintRepository.findAllByProjectId(sprint.getProject().getId());
+        projectSprints.stream()
+                .filter(other -> !other.getId().equals(id) && other.isStarted() && !other.isFinished())
+                .forEach(other -> other.setStarted(false));
+        sprintRepository.saveAll(projectSprints);
         sprint.setStarted(true);
         sprint.setStartDate(LocalDateTime.now());
+
+        List<Task> sprintTasks = taskRepository.findAllBySprintId(id);
+        List<Task> updatedTasks = sprintTasks.stream()
+                .filter(task -> IssueStatus.BACKLOG.equals(task.getStatus()))
+                .peek(task -> task.setStatus(IssueStatus.TODO))
+                .toList();
+        if (!updatedTasks.isEmpty()) {
+            taskRepository.saveAll(updatedTasks);
+        }
 
         sprintRepository.save(sprint);
         log.info("Sprint with id: {} started", id);

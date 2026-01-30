@@ -1,0 +1,22 @@
+@startuml
+' Sequence diagram: create sprint
+
+actor User as user
+participant "SprintController" as SC
+participant "SprintService" as SS
+participant "ProjectService" as PS
+participant "TaskRepository" as TR
+participant "SprintRepository" as SR
+
+user -> SC: POST /api/sprints (SprintCreateDto)
+SC -> SS: createSprint(payload)
+SS -> PS: fetchProject(projectId)
+PS --> SS: Project
+SS -> TR: findAllById(issueIds)
+TR --> SS: List<Task>
+SS -> SR: save(Sprint)
+SR --> SS: Sprint
+SS --> SC: SprintDto
+SC --> user: 201 Created (SprintDto)
+
+@enduml

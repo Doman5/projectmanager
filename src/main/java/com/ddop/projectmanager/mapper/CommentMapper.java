@@ -13,6 +13,9 @@ import java.util.List;
 public class CommentMapper {
 
     public static List<CommentDto> toCommentDtoList(List<Comment> comments) {
+        if (comments == null) {
+            return List.of();
+        }
         return comments.stream()
                 .map(CommentMapper::mapToDto)
                 .toList();

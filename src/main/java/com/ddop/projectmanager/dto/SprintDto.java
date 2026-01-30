@@ -9,6 +9,7 @@ public record SprintDto(
         LocalDateTime startDate,
         LocalDateTime endDate,
         boolean finished,
+        boolean started,
         List<TaskDto> assignedTasks,
         ProjectDto project
 ) {

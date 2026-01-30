@@ -9,7 +9,10 @@ import com.ddop.projectmanager.mapper.TaskMapper;
 import com.ddop.projectmanager.mapper.ProjectMapper;
 import com.ddop.projectmanager.mapper.SprintMapper;
 import com.ddop.projectmanager.model.Project;
+import com.ddop.projectmanager.model.ProjectMember;
+import com.ddop.projectmanager.model.ProjectRole;
 import com.ddop.projectmanager.model.User;
+import com.ddop.projectmanager.repo.ProjectMembershipRepository;
 import com.ddop.projectmanager.repo.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import static com.ddop.projectmanager.mapper.ProjectMapper.mapToEntity;
 @Slf4j
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    private final ProjectMembershipRepository projectMembershipRepository;
     private final UserService userService;
     private final PermissionService permissionService;
     private final AuthService authService;
@@ -44,6 +48,12 @@ public class ProjectService {
         Project toSave = mapToEntity(payload, owner);
 
         Project savedProject = save(toSave);
+        projectMembershipRepository.findByProjectIdAndUserId(savedProject.getId(), owner.getId())
+                .orElseGet(() -> projectMembershipRepository.save(ProjectMember.builder()
+                        .project(savedProject)
+                        .user(owner)
+                        .role(ProjectRole.ADMIN)
+                        .build()));
         log.info("Project with name: {} created, id: {}", savedProject.getName(), savedProject.getId());
         return mapToDto(savedProject);
     }

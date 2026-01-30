@@ -7,6 +7,8 @@ import com.ddop.projectmanager.dto.IssueCreateDto;
 import com.ddop.projectmanager.dto.IssuePriorityChangeDto;
 import com.ddop.projectmanager.dto.IssueStatusChangeDto;
 import com.ddop.projectmanager.dto.TaskDto;
+import com.ddop.projectmanager.dto.TaskSprintChangeDto;
+import com.ddop.projectmanager.dto.TaskUpdateDto;
 import com.ddop.projectmanager.service.CommentService;
 import com.ddop.projectmanager.service.TaskService;
 import jakarta.validation.Valid;
@@ -50,6 +52,11 @@ public class TaskController {
         return taskService.changeIssuePriority(id, payload);
     }
 
+    @PutMapping(value = "/{id}")
+    public TaskDto updateTask(@PathVariable Long id, @RequestBody TaskUpdateDto payload) {
+        return taskService.updateTask(id, payload);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable Long id) {
@@ -61,10 +68,22 @@ public class TaskController {
         return taskService.changeAssignedUser(id, payload);
     }
 
+    @PutMapping(value = "/{id}/sprint")
+    public TaskDto changeSprint(@PathVariable Long id, @RequestBody @Valid TaskSprintChangeDto payload) {
+        return taskService.changeSprint(id, payload);
+    }
+
     @PostMapping(value = "/{id}/comments")
     public CommentDto createTaskComment(@PathVariable Long id,
                                         @RequestBody @Valid CommentCreateDto payload) {
         return commentService.createComment(id, payload);
+    }
+
+    @PutMapping(value = "/{id}/comments/{commentId}")
+    public CommentDto updateTaskComment(@PathVariable Long id,
+                                        @PathVariable Long commentId,
+                                        @RequestBody @Valid CommentCreateDto payload) {
+        return commentService.updateComment(id, commentId, payload);
     }
 
     @DeleteMapping(value = "/{id}/comments/{commentId}")

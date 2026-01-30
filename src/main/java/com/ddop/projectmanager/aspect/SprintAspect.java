@@ -26,8 +26,8 @@ public class SprintAspect extends BaseAspect {
             pointcut = "execution(* com.ddop.projectmanager.service.SprintService.createSprint(..))",
             returning = "response")
     public void afterSprintCreate(SprintDto response) {
-        Project project = fetchProject(response.id());
         Sprint sprint = fetchSprint(response.id());
+        Project project = sprint.getProject();
         projectChangeService.createSprintCreateChange(project, sprint);
     }
 
@@ -35,8 +35,8 @@ public class SprintAspect extends BaseAspect {
             pointcut = "execution(* com.ddop.projectmanager.service.SprintService.editSprint(..))",
             returning = "response")
     public void afterSprintEdited(SprintDto response) {
-        Project project = fetchProject(response.id());
         Sprint sprint = fetchSprint(response.id());
+        Project project = sprint.getProject();
         projectChangeService.createSprintEditChange(project, sprint);
     }
 

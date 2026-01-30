@@ -98,7 +98,6 @@ public class ProjectChangeService {
         User currentUser = authService.getAuthenticatedUser();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
-                .task(task)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Task " + task.getTitle()+ " deleted")
@@ -122,12 +121,13 @@ public class ProjectChangeService {
 
     public void createTaskAssignedUserChange(Project project, Task task) {
         User currentUser = authService.getAuthenticatedUser();
+        String assignee = task.getAssignedUser() == null ? "none" : task.getAssignedUser().getFirstName();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
                 .task(task)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
-                .info("Task " + task.getTitle()+ " change assigned user to: " + task.getAssignedUser().getFirstName())
+                .info("Task " + task.getTitle()+ " change assigned user to: " + assignee)
                 .build();
         projectChangeRepository.save(projectChange);
         log.info("Changes for task with id: {} assigned user change for project id: {} created",task.getId(), project.getId());
@@ -150,7 +150,6 @@ public class ProjectChangeService {
         User currentUser = authService.getAuthenticatedUser();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
-                .sprint(sprint)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Sprint " + sprint.getName()+ " created")
@@ -163,7 +162,6 @@ public class ProjectChangeService {
         User currentUser = authService.getAuthenticatedUser();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
-                .sprint(sprint)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Sprint " + sprint.getName()+ " edited")
@@ -176,7 +174,6 @@ public class ProjectChangeService {
         User currentUser = authService.getAuthenticatedUser();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
-                .sprint(sprint)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Sprint " + sprint.getName()+ " finished")
@@ -189,7 +186,6 @@ public class ProjectChangeService {
         User currentUser = authService.getAuthenticatedUser();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
-                .sprint(sprint)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Sprint " + sprint.getName()+ " started")
@@ -202,7 +198,6 @@ public class ProjectChangeService {
         User currentUser = authService.getAuthenticatedUser();
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
-                .sprint(sprint)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Sprint " + sprint.getName()+ " deleted")
@@ -216,7 +211,6 @@ public class ProjectChangeService {
         ProjectChange projectChange = ProjectChange.builder()
                 .project(project)
                 .task(task)
-                .comment(comment)
                 .createdAt(LocalDateTime.now())
                 .createdBy(currentUser)
                 .info("Comment for task: " + task.getTitle()+ " deleted")

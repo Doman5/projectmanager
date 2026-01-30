@@ -27,7 +27,7 @@ public class ProjectMemberAspect extends BaseAspect {
             pointcut = "execution(* com.ddop.projectmanager.service.ProjectMembershipService.assignUsers(..))",
             returning = "response")
     public void afterAssignUserToProject(ProjectMembershipDto response) {
-        Project project = fetchProject(response.id());
+        Project project = fetchProject(response.projectId());
         User user = fetchUser(response);
         projectChangeService.createProjectAssignUserChange(project, user);
     }
@@ -40,7 +40,7 @@ public class ProjectMemberAspect extends BaseAspect {
     public void afterEditUserRoleInProject(Long projectId,
                                            ProjectMemberCreateDto projectMemberCreateDto,
                                            ProjectMembershipDto response) {
-        Project project = fetchProject(response.id());
+        Project project = fetchProject(response.projectId());
         User user = fetchUser(response);
         projectChangeService.createProjectUserRoleChange(project, user, projectMemberCreateDto.role());
     }

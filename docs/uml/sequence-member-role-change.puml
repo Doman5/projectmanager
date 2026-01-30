@@ -1,0 +1,24 @@
+@startuml
+' Sequence diagram: change member role
+
+actor User as user
+participant "ProjectMemberController" as PMC
+participant "ProjectMembershipService" as PMS
+participant "PermissionService" as Perm
+participant "ProjectService" as PS
+participant "ProjectMembershipRepository" as PMR
+
+user -> PMC: PUT /api/projects/{id}/members (ProjectMemberCreateDto)
+PMC -> PMS: editRole(projectId, dto)
+PMS -> Perm: checkAuthenticatedUserHasProjectEditPermission(projectId)
+Perm --> PMS: ok
+PMS -> PS: fetchProject(projectId)
+PS --> PMS: Project
+PMS -> PMR: findAllByProjectIdAndUserId(projectId, userId)
+PMR --> PMS: Optional
+PMS -> PMR: save(ProjectMember)
+PMR --> PMS: ProjectMember
+PMS --> PMC: ProjectMembershipDto
+PMC --> user: 200 OK (ProjectMembershipDto)
+
+@enduml

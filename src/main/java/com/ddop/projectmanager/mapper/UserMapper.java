@@ -5,6 +5,9 @@ import com.ddop.projectmanager.model.User;
 
 public class UserMapper {
     public static UserDto mapToDto(User user) {
+        if (user == null) {
+            return null;
+        }
         return new UserDto(user.getId(),  user.getEmail());
     }
 }

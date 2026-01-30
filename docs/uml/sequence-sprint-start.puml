@@ -1,0 +1,18 @@
+@startuml
+' Sequence diagram: start sprint
+
+actor User as user
+participant "SprintController" as SC
+participant "SprintService" as SS
+participant "SprintRepository" as SR
+
+user -> SC: PUT /api/sprints/{id}/start
+SC -> SS: startSprint(id)
+SS -> SR: findById(id)
+SR --> SS: Sprint
+SS -> SR: save(Sprint)
+SR --> SS: Sprint
+SS --> SC: void
+SC --> user: 200 OK
+
+@enduml

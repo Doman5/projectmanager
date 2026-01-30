@@ -1,0 +1,21 @@
+@startuml
+' Sequence diagram: edit project
+
+actor User as user
+participant "ProjectController" as PC
+participant "ProjectService" as PS
+participant "PermissionService" as Perm
+participant "ProjectRepository" as PR
+
+user -> PC: PUT /api/projects/{id} (ProjectCreatedDto)
+PC -> PS: edit(id, payload)
+PS -> Perm: checkAuthenticatedUserHasProjectEditPermission(id)
+Perm --> PS: ok
+PS -> PR: findById(id)
+PR --> PS: Project
+PS -> PR: save(Project)
+PR --> PS: Project
+PS --> PC: ProjectDto
+PC --> user: 200 OK (ProjectDto)
+
+@enduml

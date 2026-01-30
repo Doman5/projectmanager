@@ -34,6 +34,24 @@ public class CommentService {
         Comment comment = CommentMapper.mapToEntity(task, payload, currentUser);
 
         Comment saved = commentRepository.save(comment);
+        projectChangeService.createTaskCommentCreateChange(task.getProject(), task, saved);
+        return CommentMapper.mapToDto(saved);
+    }
+
+    @Transactional
+    public CommentDto updateComment(Long taskId, Long commentId, @Valid CommentCreateDto payload) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment with id: " + commentId + " not found"));
+        if (!comment.getTask().getId().equals(taskId)) {
+            throw new EntityNotFoundException("Comment not found for task id: " + taskId);
+        }
+        User currentUser = authService.getAuthenticatedUser();
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "Not comment author");
+        }
+        comment.setBody(payload.body());
+        Comment saved = commentRepository.save(comment);
         return CommentMapper.mapToDto(saved);
     }
 
@@ -41,10 +59,15 @@ public class CommentService {
     public void delete(Long id, Long commentId)  {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id: " + commentId + " not found"));
+        User currentUser = authService.getAuthenticatedUser();
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "Not comment author");
+        }
         Task task = comment.getTask();
         Project project = task.getProject();
-        projectChangeService.createTaskCommentDeleteChange(project, task, comment);
         commentRepository.deleteById(commentId);
+        projectChangeService.createTaskCommentDeleteChange(project, task, comment);
         log.info("Comment with id: {} has been deleted", commentId);
     }
 }

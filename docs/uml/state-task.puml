@@ -1,0 +1,10 @@
+@startuml
+' State diagram: Task/Issue lifecycle based on IssueStatus
+
+[*] --> BACKLOG
+BACKLOG --> IN_PROGRESS : start work
+IN_PROGRESS --> DONE : finish
+IN_PROGRESS --> BACKLOG : reopen
+DONE --> IN_PROGRESS : reopen
+
+@enduml

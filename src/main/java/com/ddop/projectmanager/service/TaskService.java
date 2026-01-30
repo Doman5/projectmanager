@@ -5,10 +5,15 @@ import com.ddop.projectmanager.dto.IssueCreateDto;
 import com.ddop.projectmanager.dto.TaskDto;
 import com.ddop.projectmanager.dto.IssuePriorityChangeDto;
 import com.ddop.projectmanager.dto.IssueStatusChangeDto;
+import com.ddop.projectmanager.dto.TaskSprintChangeDto;
+import com.ddop.projectmanager.dto.TaskUpdateDto;
 import com.ddop.projectmanager.model.Task;
 import com.ddop.projectmanager.model.Project;
+import com.ddop.projectmanager.model.Sprint;
 import com.ddop.projectmanager.model.User;
 import com.ddop.projectmanager.repo.TaskRepository;
+import com.ddop.projectmanager.repo.SprintRepository;
+import com.ddop.projectmanager.repo.ProjectChangeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +28,8 @@ import static com.ddop.projectmanager.mapper.TaskMapper.mapToDto;
 @Slf4j
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final SprintRepository sprintRepository;
+    private final ProjectChangeRepository projectChangeRepository;
     private final ProjectService projectService;
     private final UserService userService;
     private final AuthService authService;
@@ -74,7 +81,9 @@ public class TaskService {
     public TaskDto changeAssignedUser(Long id, IssueAssignedUserChangeDto payload) {
         Task issue = fetchTask(id);
 
-        if (payload.newAssignedUserId() != null) {
+        if (payload.newAssignedUserId() == null) {
+            issue.setAssignedUser(null);
+        } else {
             User user = userService.fetchUser(payload.newAssignedUserId());
             issue.setAssignedUser(user);
         }
@@ -85,11 +94,52 @@ public class TaskService {
     }
 
     @Transactional
+    public TaskDto updateTask(Long id, TaskUpdateDto payload) {
+        Task task = fetchTask(id);
+
+        if (payload.title() != null) {
+            task.setTitle(payload.title());
+        }
+        if (payload.description() != null) {
+            task.setDescription(payload.description());
+        }
+        if (payload.status() != null) {
+            task.setStatus(payload.status());
+        }
+        if (payload.type() != null) {
+            task.setType(payload.type());
+        }
+        if (payload.priority() != null) {
+            task.setPriority(payload.priority());
+        }
+
+        Task saved = taskRepository.save(task);
+        return mapToDto(saved);
+    }
+
+    @Transactional
+    public TaskDto changeSprint(Long id, TaskSprintChangeDto payload) {
+        Task issue = fetchTask(id);
+
+        if (payload.sprintId() == null) {
+            issue.setSprint(null);
+        } else {
+            Sprint sprint = sprintRepository.findById(payload.sprintId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sprint with id: " + payload.sprintId() + " not found"));
+            issue.setSprint(sprint);
+        }
+
+        Task saved = taskRepository.save(issue);
+        return mapToDto(saved);
+    }
+
+    @Transactional
     public void deleteTask(Long taskId) {
         Task task = fetchTask(taskId);
         Project project = task.getProject();
-        projectChangeService.createTaskDeleteChange(project, task);
+        projectChangeRepository.clearTaskReference(taskId);
         taskRepository.deleteById(taskId);
+        projectChangeService.createTaskDeleteChange(project, task);
         log.info("Delete task with id: {}", taskId);
     }
 

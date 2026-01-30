@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssiTask - Login</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #1b1f2a;
+      --accent: #8b8bff;
+      --accent-dark: #6c6cff;
+      --text: #f5f5f5;
+      --muted: #b5b5b5;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1a1e2b 0%, #0f1115 60%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      background: #23283a;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--accent);
+      color: #0f1115;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    .error {
+      margin-top: 12px;
+      color: var(--danger);
+      font-weight: 600;
+      min-height: 18px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">AssiTask</div>
+    <div class="subtitle">Log in to continue</div>
+
+    <form id="loginForm">
+      <div class="input-group">
+        <input id="loginEmail" type="email" placeholder="E-mail" required>
+      </div>
+      <div class="input-group">
+        <input id="loginPassword" type="password" placeholder="Password" required>
+      </div>
+      <button class="btn" type="submit">Log In</button>
+      <div id="loginError" class="error"></div>
+    </form>
+
+    <div class="footer">
+      Nie masz konta? <a href="register.html">Zarejestruj się</a>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const form = document.getElementById('loginForm');
+    const error = document.getElementById('loginError');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const data = await window.FrontendApp.apiFetch('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password }),
+        });
+        localStorage.setItem('token', data.token);
+        window.location.href = '/projects.html';
+      } catch (err) {
+        error.textContent = 'Nieprawidłowy e-mail lub hasło.';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssiTask - Task</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #1b1f2a;
+      --panel-2: #242a3a;
+      --accent: #8b8bff;
+      --accent-dark: #6c6cff;
+      --text: #f5f5f5;
+      --muted: #b5b5b5;
+      --danger: #ff6b6b;
+      --success: #4cd964;
+      --warning: #ffb84d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1a1e2b 0%, #0f1115 60%);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 32px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      color: var(--muted);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #23283a;
+      color: var(--text);
+      border: 1px solid transparent;
+      outline: none;
+      font-size: 14px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      background: #262c3f;
+    }
+
+    select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%),
+        linear-gradient(to right, transparent, transparent);
+      background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px), 100% 0;
+      background-size: 5px 5px, 5px 5px, 2.5em 2.5em;
+      background-repeat: no-repeat;
+      padding-right: 36px;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-primary { background: var(--accent); color: #0f1115; }
+    .btn-secondary { background: #2f3548; color: var(--text); }
+
+    .error {
+      color: var(--danger);
+      font-weight: 600;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .field-row:last-child { border-bottom: none; }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+
+    .comment {
+      background: var(--panel-2);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .comment-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div id="taskTitleHeader" class="title">Task</div>
+      <div id="taskSubtitle" class="subtitle"></div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button id="backBtn" class="btn btn-secondary">Back</button>
+      <button id="saveBtn" class="btn btn-primary">Save</button>
+    </div>
+  </div>
+
+  <section class="panel">
+    <h2>Edytuj zadanie</h2>
+    <div class="grid">
+      <input id="taskTitle" type="text" placeholder="Tytuł zadania">
+      <select id="taskType">
+        <option value="TASK">Zadanie</option>
+        <option value="ERROR">Błąd</option>
+        <option value="STORY">Historia</option>
+      </select>
+    </div>
+    <div style="margin-top: 12px;">
+      <textarea id="taskDescription" placeholder="Opis (opcjonalnie)"></textarea>
+    </div>
+    <div class="grid" style="margin-top: 12px;">
+      <select id="taskStatus">
+        <option value="BACKLOG">Backlog</option>
+        <option value="TODO">Do zrobienia</option>
+        <option value="IN_PROGRESS">W toku</option>
+        <option value="DONE">Zrobione</option>
+      </select>
+      <select id="taskPriority">
+        <option value="">Priorytet (opcjonalnie)</option>
+        <option value="LOW">Niski</option>
+        <option value="MEDIUM">Średni</option>
+        <option value="HIGH">Wysoki</option>
+        <option value="CRITICAL">Krytyczny</option>
+      </select>
+    </div>
+    <div class="grid" style="margin-top: 12px;">
+      <select id="taskAssignee">
+        <option value="">Przypisany (opcjonalnie)</option>
+      </select>
+      <select id="taskSprint">
+        <option value="">Sprint (opcjonalnie)</option>
+      </select>
+    </div>
+    <div id="taskError" class="error"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Szczegóły</h2>
+    <div id="details"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Komentarze</h2>
+    <div style="margin-bottom: 12px;">
+      <button id="commentToggle" class="btn btn-primary">Dodaj komentarz</button>
+    </div>
+    <div id="commentForm" class="hidden" style="margin-bottom: 12px;">
+      <textarea id="commentBody" placeholder="Dodaj komentarz..."></textarea>
+      <div style="margin-top: 10px; display: flex; gap: 8px;">
+        <button id="commentAdd" class="btn btn-primary">Dodaj</button>
+        <button id="commentCancel" class="btn btn-secondary">Anuluj</button>
+      </div>
+      <div id="commentError" class="error"></div>
+    </div>
+    <div id="comments"></div>
+  </section>
+
+  <script src="app.js"></script>
+  <script src="task-detail.js"></script>
+</body>
+</html>

@@ -8,6 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,5 +23,12 @@ public class UserService {
     public UserDto getUser(Long id) {
         User user = fetchUser(id);
         return UserMapper.mapToDto(user);
+    }
+
+    public List<UserDto> getUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::mapToDto)
+                .toList();
     }
 }

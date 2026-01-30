@@ -1,0 +1,11 @@
+@startuml
+' State diagram: ProjectMember membership/role lifecycle
+
+[*] --> INVITED
+INVITED --> ACTIVE : assignUsers
+ACTIVE --> ROLE_CHANGED : editRole
+ROLE_CHANGED --> ACTIVE : confirm
+ACTIVE --> REMOVED : deleteUserFromProject
+REMOVED --> [*]
+
+@enduml

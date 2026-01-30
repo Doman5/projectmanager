@@ -32,4 +32,7 @@ public class User {
     private String firstName;
 
     private String lastName;
+
+    @Builder.Default
+    private Boolean enabled = true;
 }

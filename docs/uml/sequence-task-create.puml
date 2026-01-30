@@ -1,0 +1,22 @@
+@startuml
+' Sequence diagram: create task
+
+actor User as user
+participant "TaskController" as TC
+participant "TaskService" as TS
+participant "ProjectService" as PS
+participant "AuthService" as AS
+participant "TaskRepository" as TR
+
+user -> TC: POST /api/tasks (IssueCreateDto)
+TC -> TS: createTask(payload)
+TS -> PS: fetchProject(projectId)
+PS --> TS: Project
+TS -> AS: getAuthenticatedUser()
+AS --> TS: User
+TS -> TR: save(Task)
+TR --> TS: Task
+TS --> TC: TaskDto
+TC --> user: 201 Created (TaskDto)
+
+@enduml

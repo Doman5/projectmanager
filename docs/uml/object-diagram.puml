@@ -1,0 +1,75 @@
+@startuml
+' Object diagram for ProjectManager domain (sample instances)
+
+object "User (Owner)" as uOwner {
+  id = 1
+  email = "owner@example.com"
+  firstName = "Anna"
+  lastName = "Nowak"
+}
+
+object "User (Developer)" as uDev {
+  id = 2
+  email = "dev@example.com"
+  firstName = "Jan"
+  lastName = "Kowalski"
+}
+
+object "Project" as p1 {
+  id = 100
+  name = "Apollo"
+  description = "New product MVP"
+}
+
+object "Sprint" as s1 {
+  id = 200
+  name = "Sprint 1"
+  started = true
+  finished = false
+}
+
+object "Task" as t1 {
+  id = 300
+  title = "Login flow"
+  status = IN_PROGRESS
+  type = FEATURE
+  priority = HIGH
+}
+
+object "Comment" as c1 {
+  id = 400
+  body = "Please add validation."
+}
+
+object "ProjectMember" as pm1 {
+  id = 500
+  role = DEVELOPER
+}
+
+object "ProjectChange" as pc1 {
+  id = 600
+  info = "Task created"
+}
+
+' Links based on entity relationships
+p1 -- uOwner : owner
+p1 -- s1 : sprints
+p1 -- t1 : issues
+
+s1 -- t1 : assignedIssues
+
+uOwner -- t1 : creator
+uDev -- t1 : assignedUser
+
+uDev -- c1 : user
+c1 -- t1 : task
+
+pm1 -- uDev : user
+pm1 -- p1 : project
+
+pc1 -- p1 : project
+pc1 -- uOwner : createdBy
+pc1 -- t1 : task
+pc1 -- c1 : comment
+pc1 -- s1 : sprint
+@enduml
