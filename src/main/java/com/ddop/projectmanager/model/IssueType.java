@@ -1,9 +1,9 @@
 package com.ddop.projectmanager.model;
 
 public enum IssueType {
-    TASK("Zadanie"),
-    ERROR("Błąd"),
-    STORY("Historia");
+    TASK("Task"),
+    ERROR("Bug"),
+    STORY("Story");
 
     private final String label;
 

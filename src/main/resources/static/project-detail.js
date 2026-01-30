@@ -16,6 +16,7 @@
   const projectTitle = document.getElementById('projectTitle');
   const projectOwner = document.getElementById('projectOwner');
   const backBtn = document.getElementById('backBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
 
   const tabBacklog = document.getElementById('tabBacklog');
   const tabBoard = document.getElementById('tabBoard');
@@ -66,12 +67,17 @@
   const statsBars = document.getElementById('statsBars');
 
   if (!projectId) {
-    backlogError.textContent = 'Brak projectId w URL';
+    backlogError.textContent = 'Missing projectId in URL';
     return;
   }
 
   backBtn.addEventListener('click', () => {
     window.location.href = '/projects.html';
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
   });
 
   function setActive(tab) {
@@ -172,7 +178,7 @@
     };
 
     if (!payload.title) {
-      taskFormError.textContent = 'Podaj tytuł zadania.';
+      taskFormError.textContent = 'Task title is required.';
       return;
     }
 
@@ -203,7 +209,7 @@
       resetTaskForm();
       await loadData();
     } catch (err) {
-      taskFormError.textContent = 'Nie udało się zapisać zadania.';
+      taskFormError.textContent = 'Failed to save task.';
     }
   });
 
@@ -212,7 +218,7 @@
     sprintFormError.textContent = '';
     const name = sprintName.value.trim();
     if (!name) {
-      sprintFormError.textContent = 'Podaj nazwę sprintu.';
+      sprintFormError.textContent = 'Sprint name is required.';
       return;
     }
     const startVal = sprintStart.value;
@@ -222,14 +228,14 @@
     if (startVal) {
       const startDate = new Date(startVal);
       if (startDate < today) {
-        sprintFormError.textContent = 'Data startu nie może być z przeszłości.';
+        sprintFormError.textContent = 'Start date cannot be in the past.';
         return;
       }
     }
     if (endVal) {
       const endDate = new Date(endVal);
       if (endDate < today) {
-        sprintFormError.textContent = 'Data końca nie może być z przeszłości.';
+        sprintFormError.textContent = 'End date cannot be in the past.';
         return;
       }
     }
@@ -237,7 +243,7 @@
       const startDate = new Date(startVal);
       const endDate = new Date(endVal);
       if (endDate < startDate) {
-        sprintFormError.textContent = 'Data końca nie może być wcześniejsza niż start.';
+        sprintFormError.textContent = 'End date cannot be before start date.';
         return;
       }
     }
@@ -256,12 +262,12 @@
       resetSprintForm();
       await loadData();
     } catch (err) {
-      sprintFormError.textContent = 'Nie udało się utworzyć sprintu.';
+      sprintFormError.textContent = 'Failed to create sprint.';
     }
   });
 
   function populateAssignees(selectedId) {
-    taskAssignee.innerHTML = '<option value=\"\">Przypisany (opcjonalnie)</option>';
+    taskAssignee.innerHTML = '<option value=\"\">Assignee (optional)</option>';
     membersCache.forEach((member) => {
       const opt = document.createElement('option');
       opt.value = member.userDto.id;
@@ -274,7 +280,7 @@
   }
 
   function populateSprints(selectedId) {
-    taskSprint.innerHTML = '<option value=\"\">Sprint (opcjonalnie)</option>';
+    taskSprint.innerHTML = '<option value=\"\">Sprint (optional)</option>';
     sprintsCache.forEach((sprint) => {
       const opt = document.createElement('option');
       opt.value = sprint.id;
@@ -312,9 +318,9 @@
       badge.className = `badge backlog-badge backlog-status ${task.status === 'DONE' ? 'done' : task.status === 'IN_PROGRESS' ? 'in-progress' : task.status === 'TODO' ? 'todo' : 'backlog'}`;
       const statusLabels = {
         BACKLOG: 'Backlog',
-        TODO: 'Do zrobienia',
-        IN_PROGRESS: 'W toku',
-        DONE: 'Zrobione',
+        TODO: 'To do',
+        IN_PROGRESS: 'In progress',
+        DONE: 'Done',
       };
       badge.textContent = statusLabels[task.status] || task.status.replace('_', ' ');
 
@@ -344,7 +350,7 @@
             body: JSON.stringify({ newAssignedUserId: val }),
           });
         } catch (err) {
-          backlogError.textContent = 'Nie udało się zmienić przypisania.';
+          backlogError.textContent = 'Failed to update assignee.';
         }
       });
 
@@ -360,12 +366,12 @@
       deleteBtn.title = 'Delete';
       deleteBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 4h6l1 3H8l1-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
       deleteBtn.addEventListener('click', async () => {
-        if (!window.confirm(`Usunąć zadanie \"${task.title}\"?`)) return;
+        if (!window.confirm(`Delete task \"${task.title}\"?`)) return;
         try {
           await apiFetch(`/api/tasks/${task.id}`, { method: 'DELETE' });
           await loadData();
         } catch (err) {
-          backlogError.textContent = 'Nie udało się usunąć zadania.';
+          backlogError.textContent = 'Failed to delete task.';
         }
       });
 
@@ -409,7 +415,7 @@
           });
           await loadData();
         } catch (err) {
-          backlogError.textContent = 'Nie udało się przenieść zadania do backlogu.';
+          backlogError.textContent = 'Failed to move task to backlog.';
         }
       });
     };
@@ -432,9 +438,9 @@
 
     const sprintTasks = (tasks || []).filter((t) => t.sprint && t.sprint.id === activeSprint.id);
     const columns = [
-      { key: 'TODO', label: 'Do zrobienia', badge: 'todo' },
-      { key: 'IN_PROGRESS', label: 'W toku', badge: 'in-progress' },
-      { key: 'DONE', label: 'Zrobione', badge: 'done' },
+      { key: 'TODO', label: 'To do', badge: 'todo' },
+      { key: 'IN_PROGRESS', label: 'In progress', badge: 'in-progress' },
+      { key: 'DONE', label: 'Done', badge: 'done' },
     ];
 
     columns.forEach((col) => {
@@ -452,7 +458,7 @@
       if (!tasksForColumn.length) {
         const empty = document.createElement('div');
         empty.className = 'item-meta';
-        empty.textContent = 'Upuść tutaj zadanie';
+        empty.textContent = 'Drop task here';
         drop.appendChild(empty);
       } else {
         tasksForColumn.forEach((t) => {
@@ -469,7 +475,7 @@
 
           const meta = document.createElement('div');
           meta.className = 'item-meta';
-          meta.textContent = t.assignedUser ? `Przypisany: ${t.assignedUser.username}` : 'Nieprzypisany';
+          meta.textContent = t.assignedUser ? `Assignee: ${t.assignedUser.username}` : 'Unassigned';
 
           card.appendChild(title);
           card.appendChild(meta);
@@ -496,7 +502,7 @@
           });
           await loadData();
         } catch (err) {
-          boardError.textContent = 'Nie udało się zmienić statusu zadania.';
+          boardError.textContent = 'Failed to update task status.';
         }
       });
 
@@ -513,18 +519,18 @@
     sprintStats.innerHTML = '';
     statsBars.innerHTML = '';
     if (!stats) {
-      statsError.textContent = 'Brak danych statystyk';
+      statsError.textContent = 'No statistics available';
       return;
     }
 
     const summaryItems = [
-      { label: 'Wszystkie zadania', value: stats.totalIssuesCount ?? 0, cls: 'sprints' },
-      { label: 'Zakończone', value: stats.completedIssuesCount ?? 0, cls: 'done' },
-      { label: 'W toku', value: stats.inProgressIssuesCount ?? 0, cls: 'in-progress' },
+      { label: 'All tasks', value: stats.totalIssuesCount ?? 0, cls: 'sprints' },
+      { label: 'Done', value: stats.completedIssuesCount ?? 0, cls: 'done' },
+      { label: 'In progress', value: stats.inProgressIssuesCount ?? 0, cls: 'in-progress' },
       { label: 'Backlog', value: stats.backlogIssuesCount ?? 0, cls: 'backlog' },
-      { label: 'Do zrobienia', value: stats.todoIssuesCount ?? 0, cls: 'todo' },
-      { label: 'Wszystkie sprinty', value: stats.totalSprintsCount ?? 0, cls: 'sprints' },
-      { label: 'Zakończone sprinty', value: stats.finishedSprintsCount ?? 0, cls: 'sprints' },
+      { label: 'To do', value: stats.todoIssuesCount ?? 0, cls: 'todo' },
+      { label: 'All sprints', value: stats.totalSprintsCount ?? 0, cls: 'sprints' },
+      { label: 'Finished sprints', value: stats.finishedSprintsCount ?? 0, cls: 'sprints' },
     ];
 
     summaryItems.forEach((item) => {
@@ -544,9 +550,9 @@
     const totalIssues = Math.max(1, stats.totalIssuesCount ?? 0);
     const bars = [
       { label: 'Backlog', value: stats.backlogIssuesCount ?? 0, color: '#ff6b6b' },
-      { label: 'Do zrobienia', value: stats.todoIssuesCount ?? 0, color: '#7cc0ff' },
-      { label: 'W toku', value: stats.inProgressIssuesCount ?? 0, color: '#ffb84d' },
-      { label: 'Zrobione', value: stats.completedIssuesCount ?? 0, color: '#4cd964' },
+      { label: 'To do', value: stats.todoIssuesCount ?? 0, color: '#7cc0ff' },
+      { label: 'In progress', value: stats.inProgressIssuesCount ?? 0, color: '#ffb84d' },
+      { label: 'Done', value: stats.completedIssuesCount ?? 0, color: '#4cd964' },
     ];
     bars.forEach((bar) => {
       const row = document.createElement('div');
@@ -570,18 +576,18 @@
 
     const userHeader = document.createElement('div');
     userHeader.className = 'stats-row header';
-    userHeader.innerHTML = '<div>Użytkownik</div><div>Wszystkie</div><div>Zakończone</div><div>W toku</div><div>Backlog</div><div>TODO</div>';
+    userHeader.innerHTML = '<div>User</div><div>Total</div><div>Done</div><div>In progress</div><div>Backlog</div><div>To do</div>';
     userStats.appendChild(userHeader);
     (stats.userStatistics || []).forEach((u) => {
       const row = document.createElement('div');
       row.className = 'stats-row';
-      row.innerHTML = `<div class="cell-label">${u.email || 'Nieprzypisane'}</div><div>${u.assignedIssuesCount ?? 0}</div><div class="cell-done">${u.completedIssuesCount ?? 0}</div><div class="cell-progress">${u.inProgressIssuesCount ?? 0}</div><div class="cell-backlog">${u.backlogIssuesCount ?? 0}</div><div class="cell-todo">${u.todoIssuesCount ?? 0}</div>`;
+      row.innerHTML = `<div class="cell-label">${u.email || 'Unassigned'}</div><div>${u.assignedIssuesCount ?? 0}</div><div class="cell-done">${u.completedIssuesCount ?? 0}</div><div class="cell-progress">${u.inProgressIssuesCount ?? 0}</div><div class="cell-backlog">${u.backlogIssuesCount ?? 0}</div><div class="cell-todo">${u.todoIssuesCount ?? 0}</div>`;
       userStats.appendChild(row);
     });
 
     const sprintHeader = document.createElement('div');
     sprintHeader.className = 'stats-row header';
-    sprintHeader.innerHTML = '<div>Sprint</div><div>Wszystkie</div><div>Zakończone</div><div>W toku</div><div>TODO</div><div>Backlog</div>';
+    sprintHeader.innerHTML = '<div>Sprint</div><div>Total</div><div>Done</div><div>In progress</div><div>To do</div><div>Backlog</div>';
     sprintStats.appendChild(sprintHeader);
     (stats.sprintStatistics || []).forEach((s) => {
       const row = document.createElement('div');
@@ -654,15 +660,15 @@
 
       const todoStat = document.createElement('div');
       todoStat.className = 'badge todo';
-      todoStat.textContent = `Do zrobienia: ${statusCounts.TODO}`;
+      todoStat.textContent = `To do: ${statusCounts.TODO}`;
 
       const progressStat = document.createElement('div');
       progressStat.className = 'badge in-progress';
-      progressStat.textContent = `W toku: ${statusCounts.IN_PROGRESS}`;
+      progressStat.textContent = `In progress: ${statusCounts.IN_PROGRESS}`;
 
       const doneStat = document.createElement('div');
       doneStat.className = 'badge done';
-      doneStat.textContent = `Zrobione: ${statusCounts.DONE}`;
+      doneStat.textContent = `Done: ${statusCounts.DONE}`;
 
       stats.appendChild(backlogStat);
       stats.appendChild(todoStat);
@@ -672,15 +678,15 @@
       const btn = document.createElement('button');
       btn.className = 'btn btn-secondary';
       if (sprint.finished) {
-        btn.textContent = 'Zakończony';
+        btn.textContent = 'Finished';
         btn.disabled = true;
         btn.className = 'btn btn-secondary';
       } else if (sprint.started) {
-        btn.textContent = 'Zakończ';
+        btn.textContent = 'Finish';
         btn.className = 'btn btn-warning';
         btn.addEventListener('click', () => finishSprint(sprint.id));
       } else {
-        btn.textContent = 'Rozpocznij';
+        btn.textContent = 'Start';
         btn.className = 'btn btn-success';
         btn.addEventListener('click', () => startSprint(sprint.id));
       }
@@ -710,7 +716,7 @@
           });
           await loadData();
         } catch (err) {
-          sprintsError.textContent = 'Nie udało się przypisać zadania do sprintu.';
+          sprintsError.textContent = 'Failed to assign task to sprint.';
         }
       });
       const tasksPanel = document.createElement('div');
@@ -720,7 +726,7 @@
       if (!sprintTasks.length) {
         const empty = document.createElement('div');
         empty.className = 'item-meta';
-        empty.textContent = 'Brak zadań w sprincie';
+      empty.textContent = 'No tasks in sprint';
         tasksPanel.appendChild(empty);
       } else {
         sprintTasks.forEach((t) => {
@@ -735,15 +741,15 @@
           rowBadge.className = `badge ${t.status === 'DONE' ? 'done' : t.status === 'IN_PROGRESS' ? 'in-progress' : t.status === 'TODO' ? 'todo' : 'backlog'}`;
           const rowStatusLabels = {
             BACKLOG: 'Backlog',
-            TODO: 'Do zrobienia',
-            IN_PROGRESS: 'W toku',
-            DONE: 'Zrobione',
+            TODO: 'To do',
+            IN_PROGRESS: 'In progress',
+            DONE: 'Done',
           };
           rowBadge.textContent = rowStatusLabels[t.status] || t.status.replace('_', ' ');
 
           const rowMeta = document.createElement('div');
           rowMeta.className = 'item-meta';
-          rowMeta.textContent = t.assignedUser ? `Przypisany: ${t.assignedUser.username}` : 'Nieprzypisany';
+          rowMeta.textContent = t.assignedUser ? `Assignee: ${t.assignedUser.username}` : 'Unassigned';
 
           row.appendChild(rowTitle);
           row.appendChild(rowMeta);
@@ -762,7 +768,7 @@
 
       const toggleBtn = document.createElement('button');
       toggleBtn.className = 'btn icon-btn icon-toggle';
-      toggleBtn.title = 'Pokaż/ukryj zadania';
+      toggleBtn.title = 'Show/hide tasks';
       toggleBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       toggleBtn.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -814,7 +820,7 @@
 
       const dropHint = document.createElement('div');
       dropHint.className = 'drop-hint';
-      dropHint.textContent = 'Upuść tutaj, aby dodać';
+      dropHint.textContent = 'Drop here to add';
 
       const dropTasks = document.createElement('div');
       dropTasks.style.display = 'flex';
@@ -838,12 +844,12 @@
 
         const tBadge = document.createElement('div');
         tBadge.className = `badge status-center ${t.status === 'DONE' ? 'done' : t.status === 'IN_PROGRESS' ? 'in-progress' : t.status === 'TODO' ? 'todo' : 'backlog'}`;
-        const statusLabels = {
-          BACKLOG: 'Backlog',
-          TODO: 'Do zrobienia',
-          IN_PROGRESS: 'W toku',
-          DONE: 'Zrobione',
-        };
+          const statusLabels = {
+            BACKLOG: 'Backlog',
+            TODO: 'To do',
+            IN_PROGRESS: 'In progress',
+            DONE: 'Done',
+          };
         tBadge.textContent = statusLabels[t.status] || t.status.replace('_', ' ');
 
         const tActions = document.createElement('div');
@@ -864,12 +870,12 @@
         tDelete.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 4h6l1 3H8l1-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
         tDelete.addEventListener('click', async (event) => {
           event.stopPropagation();
-          if (!window.confirm(`Usunąć zadanie \"${t.title}\"?`)) return;
+          if (!window.confirm(`Delete task \"${t.title}\"?`)) return;
           try {
             await apiFetch(`/api/tasks/${t.id}`, { method: 'DELETE' });
             await loadData();
           } catch (err) {
-            sprintsError.textContent = 'Nie udało się usunąć zadania.';
+          sprintsError.textContent = 'Failed to delete task.';
           }
         });
 
@@ -900,10 +906,10 @@
       editSprintBtn.className = 'btn btn-warning';
       editSprintBtn.textContent = 'Edit';
       editSprintBtn.addEventListener('click', async () => {
-        const name = window.prompt('Nazwa sprintu', sprint.name);
+        const name = window.prompt('Sprint name', sprint.name);
         if (!name) return;
-        const startDate = window.prompt('Data startu (YYYY-MM-DD)', formatDateInput(sprint.startDate));
-        const endDate = window.prompt('Data końca (YYYY-MM-DD)', formatDateInput(sprint.endDate));
+        const startDate = window.prompt('Start date (YYYY-MM-DD)', formatDateInput(sprint.startDate));
+        const endDate = window.prompt('End date (YYYY-MM-DD)', formatDateInput(sprint.endDate));
         try {
           await apiFetch(`/api/sprints/${sprint.id}`, {
             method: 'PUT',
@@ -918,21 +924,21 @@
           });
           await loadData();
         } catch (err) {
-          sprintsError.textContent = 'Nie udało się edytować sprintu.';
+          sprintsError.textContent = 'Failed to edit sprint.';
         }
       });
 
       const startBtn = document.createElement('button');
       startBtn.className = 'btn btn-success';
       if (sprint.finished) {
-        startBtn.textContent = 'Zakończony';
+        startBtn.textContent = 'Finished';
         startBtn.disabled = true;
       } else if (sprint.started) {
-        startBtn.textContent = 'Zakończ';
+        startBtn.textContent = 'Finish';
         startBtn.className = 'btn btn-warning';
         startBtn.addEventListener('click', () => finishSprint(sprint.id));
       } else {
-        startBtn.textContent = 'Rozpocznij';
+        startBtn.textContent = 'Start';
         startBtn.addEventListener('click', () => startSprint(sprint.id));
       }
 
@@ -940,12 +946,12 @@
       deleteSprintBtn.className = 'btn btn-danger';
       deleteSprintBtn.textContent = 'Delete';
       deleteSprintBtn.addEventListener('click', async () => {
-        if (!window.confirm(`Usunąć sprint \"${sprint.name}\"?`)) return;
+        if (!window.confirm(`Delete sprint \"${sprint.name}\"?`)) return;
         try {
           await apiFetch(`/api/sprints/${sprint.id}`, { method: 'DELETE' });
           await loadData();
         } catch (err) {
-          sprintsError.textContent = 'Nie udało się usunąć sprintu.';
+          sprintsError.textContent = 'Failed to delete sprint.';
         }
       });
 
@@ -980,7 +986,7 @@
           });
           await loadData();
         } catch (err) {
-          sprintsError.textContent = 'Nie udało się przypisać zadania do sprintu.';
+          sprintsError.textContent = 'Failed to assign task to sprint.';
         }
       });
       backlogSprintsList.appendChild(dropItem);
@@ -1020,7 +1026,7 @@
       await apiFetch(`/api/sprints/${id}/start`, { method: 'PUT' });
       await loadData();
     } catch (err) {
-      sprintsError.textContent = 'Nie udało się wystartować sprintu.';
+      sprintsError.textContent = 'Failed to start sprint.';
     }
   }
 
@@ -1029,7 +1035,7 @@
       await apiFetch(`/api/sprints/${id}/finish`, { method: 'PUT' });
       await loadData();
     } catch (err) {
-      sprintsError.textContent = 'Nie udało się zakończyć sprintu.';
+      sprintsError.textContent = 'Failed to finish sprint.';
     }
   }
 
@@ -1068,13 +1074,13 @@
         return;
       }
       if (err && err.status === 403) {
-        backlogError.textContent = 'Brak dostępu do projektu';
+        backlogError.textContent = 'Access denied for project';
       } else if (err && err.status === 404) {
-        backlogError.textContent = 'Nie znaleziono projektu.';
+        backlogError.textContent = 'Project not found.';
       } else if (err && err.message) {
-        backlogError.textContent = `Nie udało się pobrać danych projektu: ${err.message}`;
+        backlogError.textContent = `Failed to load project data: ${err.message}`;
       } else {
-        backlogError.textContent = 'Nie udało się pobrać danych projektu.';
+        backlogError.textContent = 'Failed to load project data.';
       }
       console.error('Project detail error', err);
     }

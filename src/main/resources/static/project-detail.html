@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -533,12 +533,24 @@
     }
 
     .hidden { display: none; }
+
+    .logout-btn {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 10;
+    }
+
+    .header {
+      margin-top: 52px;
+    }
   </style>
 </head>
 <body>
+  <button id="logoutBtn" class="btn btn-danger logout-btn">Logout</button>
   <div class="header">
     <div>
-      <div id="projectTitle" class="title">Projekt</div>
+      <div id="projectTitle" class="title">Project</div>
       <div id="projectOwner" class="subtitle"></div>
     </div>
     <button id="backBtn" class="btn btn-secondary">Back</button>
@@ -548,114 +560,114 @@
     <button id="tabBacklog" class="tab active">Backlog</button>
     <button id="tabBoard" class="tab">Board</button>
     <button id="tabSprints" class="tab">Sprints</button>
-    <button id="tabStats" class="tab">Statystyki</button>
+    <button id="tabStats" class="tab">Statistics</button>
   </div>
 
   <section id="backlogPanel" class="panel">
     <h2>Backlog</h2>
     <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-      <button id="newSprintBtn" class="btn btn-secondary btn-big" style="flex: 1;">Nowy sprint</button>
-      <button id="newTaskBtn" class="btn btn-primary btn-big" style="flex: 1;">Nowe zadanie</button>
+      <button id="newSprintBtn" class="btn btn-secondary btn-big" style="flex: 1;">New sprint</button>
+      <button id="newTaskBtn" class="btn btn-primary btn-big" style="flex: 1;">New task</button>
     </div>
     <form id="sprintForm" class="hidden" style="margin-bottom: 20px;">
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <label style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;">Nazwa sprintu</label>
-        <input id="sprintName" type="text" placeholder="Nazwa sprintu" required>
+        <label style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;">Sprint name</label>
+        <input id="sprintName" type="text" placeholder="Sprint name" required>
       </div>
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
-        <label style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;">Data startu</label>
+        <label style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;">Start date</label>
         <input id="sprintStart" type="date">
       </div>
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
-        <label style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;">Data końca</label>
+        <label style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;">End date</label>
         <input id="sprintEnd" type="date">
       </div>
       <div style="display: flex; gap: 8px; margin-top: 12px;">
-        <button id="sprintSubmit" class="btn btn-primary" type="submit">Zapisz</button>
-        <button id="sprintCancel" class="btn btn-secondary" type="button">Anuluj</button>
+        <button id="sprintSubmit" class="btn btn-primary" type="submit">Save</button>
+        <button id="sprintCancel" class="btn btn-secondary" type="button">Cancel</button>
       </div>
       <div id="sprintFormError" class="error"></div>
     </form>
     <form id="taskForm" class="hidden" style="margin-bottom: 20px;">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <input id="taskTitle" type="text" placeholder="Tytuł zadania" required>
+        <input id="taskTitle" type="text" placeholder="Task title" required>
         <select id="taskType">
-          <option value="TASK">Zadanie</option>
-          <option value="ERROR">Błąd</option>
-          <option value="STORY">Historia</option>
+          <option value="TASK">Task</option>
+          <option value="ERROR">Bug</option>
+          <option value="STORY">Story</option>
         </select>
       </div>
       <div style="margin-top: 12px;">
-        <textarea id="taskDescription" placeholder="Opis (opcjonalnie)"></textarea>
+        <textarea id="taskDescription" placeholder="Description (optional)"></textarea>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
         <select id="taskStatus">
           <option value="BACKLOG">Backlog</option>
-          <option value="TODO">Do zrobienia</option>
-          <option value="IN_PROGRESS">W toku</option>
-          <option value="DONE">Zrobione</option>
+          <option value="TODO">To do</option>
+          <option value="IN_PROGRESS">In progress</option>
+          <option value="DONE">Done</option>
         </select>
         <select id="taskPriority">
-          <option value="">Priorytet (opcjonalnie)</option>
-          <option value="LOW">Niski</option>
-          <option value="MEDIUM">Średni</option>
-          <option value="HIGH">Wysoki</option>
-          <option value="CRITICAL">Krytyczny</option>
+          <option value="">Priority (optional)</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+          <option value="CRITICAL">Critical</option>
         </select>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
         <select id="taskAssignee">
-          <option value="">Przypisany (opcjonalnie)</option>
+          <option value="">Assignee (optional)</option>
         </select>
         <select id="taskSprint">
-          <option value="">Sprint (opcjonalnie)</option>
+          <option value="">Sprint (optional)</option>
         </select>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px;">
-        <button id="taskSubmit" class="btn btn-primary" type="submit">Zapisz</button>
-        <button id="taskCancel" class="btn btn-secondary" type="button">Anuluj</button>
+        <button id="taskSubmit" class="btn btn-primary" type="submit">Save</button>
+        <button id="taskCancel" class="btn btn-secondary" type="button">Cancel</button>
       </div>
       <div id="taskFormError" class="error"></div>
     </form>
-    <h2>Sprinty (upuść zadanie)</h2>
+    <h2>Sprints (drop task)</h2>
     <div id="backlogSprintsList" class="list"></div>
-    <div id="backlogSprintsEmpty" class="subtitle" style="margin-top: 12px; text-align: center; font-size: 15px;">Brak sprintów</div>
-    <h2 style="margin-top: 24px;">Nieprzypisane zadania</h2>
-    <div id="backlogDropZone" class="item" style="display: none; border: 2px dashed var(--accent); background: transparent; color: var(--muted); text-align: center; padding: 18px;">Upuść tutaj, aby przenieść do backlogu</div>
+    <div id="backlogSprintsEmpty" class="subtitle" style="margin-top: 12px; text-align: center; font-size: 15px;">No sprints</div>
+    <h2 style="margin-top: 24px;">Unassigned tasks</h2>
+    <div id="backlogDropZone" class="item" style="display: none; border: 2px dashed var(--accent); background: transparent; color: var(--muted); text-align: center; padding: 18px;">Drop here to move to backlog</div>
     <div id="backlogList" class="list"></div>
     <div id="backlogEmpty" class="subtitle" style="margin-top: 12px;"></div>
     <div id="backlogError" class="error"></div>
   </section>
 
   <section id="sprintsPanel" class="panel hidden">
-    <h2>Sprinty</h2>
+    <h2>Sprints</h2>
     <div id="sprintsList" class="list"></div>
-    <div id="sprintsEmpty" class="subtitle" style="margin-top: 12px;">Brak sprintów</div>
+    <div id="sprintsEmpty" class="subtitle" style="margin-top: 12px;">No sprints</div>
     <div id="sprintsError" class="error"></div>
   </section>
 
   <section id="statsPanel" class="panel hidden">
-    <h2>Statystyki projektu</h2>
+    <h2>Project statistics</h2>
     <div class="stats-section">
-      <h3>Podsumowanie</h3>
+      <h3>Summary</h3>
       <div id="statsSummary" class="stats-summary"></div>
       <div id="statsBars" class="stats-bars"></div>
     </div>
     <div class="stats-section">
-      <h3>Statystyki użytkowników</h3>
+      <h3>User statistics</h3>
       <div id="userStats" class="stats-table"></div>
     </div>
     <div class="stats-section">
-      <h3>Statystyki sprintów</h3>
+      <h3>Sprint statistics</h3>
       <div id="sprintStats" class="stats-table"></div>
     </div>
     <div id="statsError" class="error"></div>
   </section>
 
   <section id="boardPanel" class="panel hidden">
-    <h2>Aktualny sprint - Board</h2>
+    <h2>Current sprint - Board</h2>
     <div id="boardTitle" class="subtitle"></div>
-    <div id="boardEmpty" class="subtitle center-text" style="margin-top: 12px; font-size: 15px;">Brak aktywnego sprintu</div>
+    <div id="boardEmpty" class="subtitle center-text" style="margin-top: 12px; font-size: 15px;">No active sprint</div>
     <div id="boardColumns" class="board-columns"></div>
     <div id="boardError" class="error"></div>
   </section>

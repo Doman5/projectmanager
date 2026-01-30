@@ -54,7 +54,7 @@
   });
 
   function populateAssignees(selectedId) {
-    taskAssignee.innerHTML = '<option value="">Przypisany (opcjonalnie)</option>';
+    taskAssignee.innerHTML = '<option value="">Assignee (optional)</option>';
     membersCache.forEach((member) => {
       const opt = document.createElement('option');
       opt.value = member.userDto.id;
@@ -67,7 +67,7 @@
   }
 
   function populateSprints(selectedId) {
-    taskSprint.innerHTML = '<option value="">Sprint (opcjonalnie)</option>';
+    taskSprint.innerHTML = '<option value="">Sprint (optional)</option>';
     sprintsCache.forEach((sprint) => {
       const opt = document.createElement('option');
       opt.value = sprint.id;
@@ -82,13 +82,13 @@
   function renderDetails(task) {
     const rows = [
       ['ID', task.id],
-      ['Projekt', task.project ? task.project.name : '—'],
+      ['Project', task.project ? task.project.name : '—'],
       ['Sprint', task.sprint ? task.sprint.name : '—'],
       ['Status', task.status],
-      ['Typ', task.type],
-      ['Priorytet', task.priority || '—'],
-      ['Przypisany', task.assignedUser ? task.assignedUser.username : '—'],
-      ['Utworzył', task.creator ? task.creator.username : '—'],
+      ['Type', task.type],
+      ['Priority', task.priority || '—'],
+      ['Assignee', task.assignedUser ? task.assignedUser.username : '—'],
+      ['Created by', task.creator ? task.creator.username : '—'],
     ];
 
     details.innerHTML = '';
@@ -110,7 +110,7 @@
     comments.innerHTML = '';
     const data = list || [];
     if (!data.length) {
-      comments.innerHTML = '<div class="subtitle">Brak komentarzy</div>';
+      comments.innerHTML = '<div class="subtitle">No comments</div>';
       return;
     }
 
@@ -145,7 +145,7 @@
           input.style.width = '100%';
           const save = document.createElement('button');
           save.className = 'btn btn-primary';
-          save.textContent = 'Zapisz';
+          save.textContent = 'Save';
           save.style.marginTop = '8px';
           save.addEventListener('click', async () => {
             try {
@@ -156,7 +156,7 @@
               inlineEditingId = null;
               await loadTask();
             } catch (err) {
-              commentError.textContent = 'Nie udało się zapisać komentarza.';
+              commentError.textContent = 'Failed to save comment.';
             }
           });
           body.replaceWith(input);
@@ -172,7 +172,7 @@
             await apiFetch(`/api/tasks/${taskId}/comments/${comment.id}`, { method: 'DELETE' });
             await loadTask();
           } catch (err) {
-            commentError.textContent = 'Nie udało się usunąć komentarza.';
+            commentError.textContent = 'Failed to delete comment.';
           }
         });
 
@@ -192,7 +192,7 @@
       const task = await apiFetch(`/api/tasks/${taskId}`);
       currentTask = task;
       taskTitleHeader.textContent = task.title || 'Task';
-      taskSubtitle.textContent = task.project ? `Projekt: ${task.project.name}` : '';
+      taskSubtitle.textContent = task.project ? `Project: ${task.project.name}` : '';
 
       taskTitle.value = task.title || '';
       taskDescription.value = task.description || '';
@@ -215,7 +215,7 @@
       renderDetails(task);
       renderComments(task.comments || []);
     } catch (err) {
-      taskError.textContent = 'Nie udało się pobrać zadania.';
+      taskError.textContent = 'Failed to load task.';
     }
   }
 
@@ -251,7 +251,7 @@
       }
       await loadTask();
     } catch (err) {
-      taskError.textContent = 'Nie udało się zapisać zmian.';
+      taskError.textContent = 'Failed to save changes.';
     }
   });
 
@@ -260,7 +260,7 @@
     commentError.textContent = '';
     const body = commentBody.value.trim();
     if (!body) {
-      commentError.textContent = 'Wpisz treść komentarza.';
+      commentError.textContent = 'Comment cannot be empty.';
       return;
     }
     try {
@@ -272,7 +272,7 @@
       commentForm.classList.add('hidden');
       await loadTask();
     } catch (err) {
-      commentError.textContent = 'Nie udało się dodać komentarza.';
+      commentError.textContent = 'Failed to add comment.';
     }
   });
 

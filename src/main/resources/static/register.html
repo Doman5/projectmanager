@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -132,10 +132,10 @@
     <form id="registerForm">
       <div class="form-grid">
         <div class="input-group">
-          <input id="firstName" type="text" placeholder="Imię" required>
+          <input id="firstName" type="text" placeholder="First name" required>
         </div>
         <div class="input-group">
-          <input id="lastName" type="text" placeholder="Nazwisko" required>
+          <input id="lastName" type="text" placeholder="Last name" required>
         </div>
       </div>
 
@@ -145,10 +145,10 @@
 
       <div class="form-grid">
         <div class="input-group">
-          <input id="password" type="password" placeholder="Hasło" required>
+          <input id="password" type="password" placeholder="Password" required>
         </div>
         <div class="input-group">
-          <input id="confirm" type="password" placeholder="Powtórz hasło" required>
+          <input id="confirm" type="password" placeholder="Confirm password" required>
         </div>
       </div>
 
@@ -157,7 +157,7 @@
     </form>
 
     <div class="footer">
-      Masz już konto? <a href="login.html">Zaloguj się</a>
+      Already have an account? <a href="login.html">Log in</a>
     </div>
   </div>
 
@@ -177,7 +177,7 @@
       const confirm = document.getElementById('confirm').value;
 
       if (password !== confirm) {
-        error.textContent = 'Hasła nie są takie same.';
+        error.textContent = 'Passwords do not match.';
         return;
       }
 
@@ -193,7 +193,7 @@
         localStorage.setItem('token', login.token);
         window.location.href = '/projects.html';
       } catch (err) {
-        error.textContent = 'Nie udało się zarejestrować.';
+        error.textContent = 'Failed to register.';
       }
     });
   </script>

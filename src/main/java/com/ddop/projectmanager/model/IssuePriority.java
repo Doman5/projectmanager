@@ -1,10 +1,10 @@
 package com.ddop.projectmanager.model;
 
 public enum IssuePriority {
-    LOW("Niski"),
-    MEDIUM("Średni"),
-    HIGH("Wysoki"),
-    CRITICAL("Krytyczny");
+    LOW("Low"),
+    MEDIUM("Medium"),
+    HIGH("High"),
+    CRITICAL("Critical");
 
     private final String label;
 

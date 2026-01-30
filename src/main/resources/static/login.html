@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,7 +135,7 @@
     </form>
 
     <div class="footer">
-      Nie masz konta? <a href="register.html">Zarejestruj się</a>
+      Don't have an account? <a href="register.html">Sign up</a>
     </div>
   </div>
 
@@ -159,7 +159,7 @@
         localStorage.setItem('token', data.token);
         window.location.href = '/projects.html';
       } catch (err) {
-        error.textContent = 'Nieprawidłowy e-mail lub hasło.';
+        error.textContent = 'Invalid email or password.';
       }
     });
   </script>

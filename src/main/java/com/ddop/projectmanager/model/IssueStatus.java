@@ -2,9 +2,9 @@ package com.ddop.projectmanager.model;
 
 public enum IssueStatus {
     BACKLOG("Backlog"),
-    TODO("Do zrobienia"),
-    IN_PROGRESS("W toku"),
-    DONE("Zrobione");
+    TODO("To do"),
+    IN_PROGRESS("In progress"),
+    DONE("Done");
 
     private final String label;
 

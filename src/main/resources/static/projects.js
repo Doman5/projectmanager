@@ -13,10 +13,15 @@
   const formError = document.getElementById('formError');
   const formTitle = document.getElementById('formTitle');
   const form = document.getElementById('projectForm');
-  const cancelBtn = document.getElementById('projectCancel');
   const nameInput = document.getElementById('projectName');
   const descInput = document.getElementById('projectDescription');
   const logoutBtn = document.getElementById('logoutBtn');
+  const editModal = document.getElementById('editModal');
+  const editForm = document.getElementById('editForm');
+  const editName = document.getElementById('editName');
+  const editDescription = document.getElementById('editDescription');
+  const editCancel = document.getElementById('editCancel');
+  const editError = document.getElementById('editError');
 
   let ownerId = null;
   let editId = null;
@@ -32,11 +37,25 @@
   }
 
   function resetForm() {
-    editId = null;
-    formTitle.textContent = 'Nowy projekt';
-    cancelBtn.style.display = 'none';
+    formTitle.textContent = 'New project';
     nameInput.value = '';
     descInput.value = '';
+  }
+
+  function openEditModal(project) {
+    editId = project.id;
+    editError.textContent = '';
+    editName.value = project.name || '';
+    editDescription.value = project.description || '';
+    editModal.classList.add('open');
+    editModal.setAttribute('aria-hidden', 'false');
+    editName.focus();
+  }
+
+  function closeEditModal() {
+    editId = null;
+    editModal.classList.remove('open');
+    editModal.setAttribute('aria-hidden', 'true');
   }
 
   function renderProjects(projects) {
@@ -79,23 +98,19 @@
       editBtn.className = 'btn btn-secondary';
       editBtn.textContent = 'Edit';
       editBtn.addEventListener('click', () => {
-        editId = project.id;
-        formTitle.textContent = 'Edytuj projekt';
-        cancelBtn.style.display = 'block';
-        nameInput.value = project.name || '';
-        descInput.value = project.description || '';
+        openEditModal(project);
       });
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'btn btn-danger';
       deleteBtn.textContent = 'Delete';
       deleteBtn.addEventListener('click', async () => {
-        if (!window.confirm(`Usunąć projekt "${project.name}"?`)) return;
+        if (!window.confirm(`Delete project "${project.name}"?`)) return;
         try {
           await apiFetch(`/api/projects/${project.id}`, { method: 'DELETE' });
           await loadProjects();
         } catch (err) {
-          errorEl.textContent = 'Nie udało się usunąć projektu.';
+          errorEl.textContent = 'Failed to delete project.';
         }
       });
 
@@ -115,7 +130,7 @@
       const projects = await apiFetch('/api/projects');
       renderProjects(projects || []);
     } catch (err) {
-      errorEl.textContent = 'Nie udało się pobrać projektów.';
+      errorEl.textContent = 'Failed to load projects.';
     }
   }
 
@@ -127,31 +142,49 @@
     const description = descInput.value.trim();
 
     if (!name) {
-      formError.textContent = 'Podaj nazwę projektu.';
+      formError.textContent = 'Project name is required.';
       return;
     }
 
     try {
-      if (editId) {
-        await apiFetch(`/api/projects/${editId}`, {
-          method: 'PUT',
-          body: JSON.stringify({ ownerId, name, description: description || null }),
-        });
-      } else {
-        await apiFetch('/api/projects', {
-          method: 'POST',
-          body: JSON.stringify({ ownerId, name, description: description || null }),
-        });
-      }
+      await apiFetch('/api/projects', {
+        method: 'POST',
+        body: JSON.stringify({ ownerId, name, description: description || null }),
+      });
       resetForm();
       await loadProjects();
     } catch (err) {
-      formError.textContent = 'Nie udało się zapisać projektu.';
+      formError.textContent = 'Failed to save project.';
     }
   });
 
-  cancelBtn.addEventListener('click', () => {
-    resetForm();
+  editCancel.addEventListener('click', () => {
+    closeEditModal();
+  });
+
+  editModal.addEventListener('click', (event) => {
+    if (event.target === editModal) closeEditModal();
+  });
+
+  editForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    editError.textContent = '';
+    const name = editName.value.trim();
+    const description = editDescription.value.trim();
+    if (!name) {
+      editError.textContent = 'Project name is required.';
+      return;
+    }
+    try {
+      await apiFetch(`/api/projects/${editId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ ownerId, name, description: description || null }),
+      });
+      closeEditModal();
+      await loadProjects();
+    } catch (err) {
+      editError.textContent = 'Failed to save project.';
+    }
   });
 
   (async () => {

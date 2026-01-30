@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -171,59 +171,59 @@
   </div>
 
   <section class="panel">
-    <h2>Edytuj zadanie</h2>
+    <h2>Edit task</h2>
     <div class="grid">
-      <input id="taskTitle" type="text" placeholder="Tytuł zadania">
+      <input id="taskTitle" type="text" placeholder="Task title">
       <select id="taskType">
-        <option value="TASK">Zadanie</option>
-        <option value="ERROR">Błąd</option>
-        <option value="STORY">Historia</option>
+        <option value="TASK">Task</option>
+        <option value="ERROR">Bug</option>
+        <option value="STORY">Story</option>
       </select>
     </div>
     <div style="margin-top: 12px;">
-      <textarea id="taskDescription" placeholder="Opis (opcjonalnie)"></textarea>
+      <textarea id="taskDescription" placeholder="Description (optional)"></textarea>
     </div>
     <div class="grid" style="margin-top: 12px;">
       <select id="taskStatus">
         <option value="BACKLOG">Backlog</option>
-        <option value="TODO">Do zrobienia</option>
-        <option value="IN_PROGRESS">W toku</option>
-        <option value="DONE">Zrobione</option>
+        <option value="TODO">To do</option>
+        <option value="IN_PROGRESS">In progress</option>
+        <option value="DONE">Done</option>
       </select>
       <select id="taskPriority">
-        <option value="">Priorytet (opcjonalnie)</option>
-        <option value="LOW">Niski</option>
-        <option value="MEDIUM">Średni</option>
-        <option value="HIGH">Wysoki</option>
-        <option value="CRITICAL">Krytyczny</option>
+        <option value="">Priority (optional)</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+        <option value="CRITICAL">Critical</option>
       </select>
     </div>
     <div class="grid" style="margin-top: 12px;">
       <select id="taskAssignee">
-        <option value="">Przypisany (opcjonalnie)</option>
+        <option value="">Assignee (optional)</option>
       </select>
       <select id="taskSprint">
-        <option value="">Sprint (opcjonalnie)</option>
+        <option value="">Sprint (optional)</option>
       </select>
     </div>
     <div id="taskError" class="error"></div>
   </section>
 
   <section class="panel">
-    <h2>Szczegóły</h2>
+    <h2>Details</h2>
     <div id="details"></div>
   </section>
 
   <section class="panel">
-    <h2>Komentarze</h2>
+    <h2>Comments</h2>
     <div style="margin-bottom: 12px;">
-      <button id="commentToggle" class="btn btn-primary">Dodaj komentarz</button>
+      <button id="commentToggle" class="btn btn-primary">Add comment</button>
     </div>
     <div id="commentForm" class="hidden" style="margin-bottom: 12px;">
-      <textarea id="commentBody" placeholder="Dodaj komentarz..."></textarea>
+      <textarea id="commentBody" placeholder="Add a comment..."></textarea>
       <div style="margin-top: 10px; display: flex; gap: 8px;">
-        <button id="commentAdd" class="btn btn-primary">Dodaj</button>
-        <button id="commentCancel" class="btn btn-secondary">Anuluj</button>
+        <button id="commentAdd" class="btn btn-primary">Add</button>
+        <button id="commentCancel" class="btn btn-secondary">Cancel</button>
       </div>
       <div id="commentError" class="error"></div>
     </div>

@@ -117,7 +117,7 @@ public class StatisticService {
     private UserStatisticDto createUnassignedStatistic(List<Task> issues) {
         return new UserStatisticDto(
                 null,
-                "Nieprzypisane",
+                "Unassigned",
                 (long) issues.size(),
                 getIssueCountWhereStatusEquals(issues, IssueStatus.DONE),
                 getIssueCountWhereStatusEquals(issues, IssueStatus.IN_PROGRESS),
